@@ -1,0 +1,74 @@
+version: "15.0"
+description: Requirements for the shared Eliware mail API client library.
+directives:
+  - id: E-1361.0
+    dos:
+      - Provide HTTP API and WebSocket clients for Node.js and browser applications.
+      - Publish the native ESM package as `@eliware/mail-client` with TypeScript declarations.
+      - Keep API calls, responses, attachments, and events aligned with mail-server contracts.
+      - Keep this package focused on mail API calls and client-side event handling.
+      - Keep EliD OAuth sign-in in mail-web and its separate identity client.
+      - Build and publish this package before any consumer rewrite starts.
+    donts:
+      - Do not connect to SMTP, MariaDB, RabbitMQ, or shared file storage.
+      - Do not depend on `@eliware/elid-client` or run OAuth flows.
+      - Do not rewrite mail-cli, mail-discord, or mail-web in this repository.
+
+  - id: E-1361.1
+    dos:
+      - Support mail-server routes for reads, searches, updates, sends, deletes, and send actions.
+      - Preserve API envelopes, request IDs, headers, and attachment metadata.
+      - Return typed errors for failed responses and keep available request IDs.
+      - Apply request timeouts and accept caller-provided Fetch implementations.
+      - Retry send requests only when they include a stable idempotency key.
+      - Accept an async token provider so hosts can refresh credentials before requests.
+      - Request browser tokens through `POST /api/auth/token` and keep the response envelope.
+    donts:
+      - Do not reshape API response bodies without documenting the change.
+      - Do not retry a send without a stable idempotency key.
+
+  - id: E-1361.2
+    dos:
+      - Use separate static API keys for mail-discord and mail-web server deployments.
+      - Allow separate long-lived API keys for every mail-cli installation.
+      - Store mail-discord and mail-web API keys in Kubernetes secrets.
+      - Send host-provided long-lived API tokens as bearer credentials for trusted Node.js clients.
+      - Support long-lived tokens for mail-cli HTTP requests without WebSocket access.
+      - Support long-lived tokens for mail-discord HTTP and WebSocket access.
+      - Support mail-web server requests that get short-lived browser tokens.
+      - Return the browser token, token type, and lifetime from the token response.
+      - Use short-lived browser tokens for direct browser HTTP requests to mail-server.
+      - Use the browser token for HTTP bearer requests and WebSocket authentication.
+      - Let browser clients request new short-lived tokens through the host token provider.
+      - Keep the mail-web long-lived token on its server and outside browser code.
+      - Give Eli full access to every domain and mailbox as the only user.
+    donts:
+      - Do not expose long-lived API tokens to browser code.
+      - Do not add multi-user access rules or per-user mailbox scopes.
+      - Do not store browser tokens in durable browser storage.
+
+  - id: E-1361.3
+    dos:
+      - Authenticate WebSocket sessions after the browser opens each connection.
+      - Send `{"type":"authenticate","token":"..."}` as the first WebSocket message.
+      - Wait for `{"type":"authenticated"}` before delivering events to callers.
+      - Support different mail-server and mail-web domains without tokens in WebSocket URLs.
+      - Reconnect safely and continue events from the last acknowledged cursor.
+      - Let stable consumer IDs acknowledge processed event cursors through the HTTP API.
+      - Move durable cursors only after handlers and server acknowledgements succeed.
+      - Tolerate repeated events and refresh current data through the HTTP API after notifications.
+      - Let callers process events without RabbitMQ payloads as a client contract.
+    donts:
+      - Do not put bearer tokens in WebSocket URLs or query strings.
+      - Do not mark a WebSocket session authenticated before the server accepts its first message.
+      - Do not use event notifications as complete message data.
+
+  - id: E-1361.4
+    dos:
+      - Use `@eliware/log` for structured logs in the Node.js package entry.
+      - Accept an injected logger with `debug`, `warn`, and `error` methods.
+      - Omit Node-only logging imports from the browser entry.
+      - Log request methods, response statuses, error names, and available request IDs.
+    donts:
+      - Do not log tokens, message bodies, attachment contents, or full request URLs.
+      - Do not require logging from browser clients.

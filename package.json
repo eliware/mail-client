@@ -1,0 +1,112 @@
+{
+  "name": "@eliware/mail-client",
+  "version": "15.0.1",
+  "type": "module",
+  "description": "Mail client library for the Eliware mail platform.",
+  "keywords": [
+    "mail",
+    "email",
+    "client",
+    "library",
+    "api"
+  ],
+  "private": false,
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "main": "./src/index.mjs",
+  "files": [
+    "src/",
+    "docs/",
+    "README.md",
+    "AGENTS.md",
+    "LICENSE",
+    "RELEASE_NOTES.md",
+    "examples/",
+    "specs/",
+    "package.json"
+  ],
+  "scripts": {
+    "test": "eliware-test",
+    "smoke": "node test-fixtures/smoke.mjs",
+    "lint": "eliware-test --lint",
+    "audit": "eliware-test --audit",
+    "format": "eliware-test --format",
+    "format:check": "eliware-test --format-check",
+    "typecheck": "tsc --project tsconfig.json",
+    "pack": "eliware-test --pack"
+  },
+  "engines": {
+    "node": ">=26"
+  },
+  "dependencies": {
+    "@eliware/log": "^15.0.0"
+  },
+  "devDependencies": {
+    "@eliware/test": "^15.0.1",
+    "typescript": "^7.0.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/**/*.test.mjs"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.mjs"
+    ],
+    "coverageReporters": [
+      "text",
+      "json-summary"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100,
+        "statements": 100
+      }
+    }
+  },
+  "prettier": {
+    "printWidth": 100,
+    "tabWidth": 2,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": false,
+    "quoteProps": "as-needed",
+    "jsxSingleQuote": false,
+    "trailingComma": "all",
+    "bracketSpacing": true,
+    "bracketSameLine": false,
+    "arrowParens": "always",
+    "proseWrap": "preserve",
+    "endOfLine": "lf"
+  },
+  "author": "Eliware <eliware@eliware.org>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eliware/mail-client.git"
+  },
+  "homepage": "https://github.com/eliware/mail-client#readme",
+  "bugs": {
+    "url": "https://github.com/eliware/mail-client/issues"
+  },
+  "eliware": {
+    "id": "E-1361",
+    "apply": [
+      "general",
+      "library",
+      "npm-published"
+    ]
+  },
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "browser": "./src/index.browser.mjs",
+      "import": "./src/index.mjs"
+    }
+  }
+}
