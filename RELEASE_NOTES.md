@@ -5,8 +5,8 @@
 ### Added
 
 - Add an authenticated HTTP client for the mail-server API.
-- Add methods for messages, domains, search, sends, attachments, and event cursors.
-- Add WebSocket authentication, event delivery, replay cursors, and reconnect support.
+- Add methods for message lists, domains, lookups, sends, attachments, and event cursors.
+- Add WebSocket authentication, event handling, replay cursors, and reconnect support.
 - Add Node.js structured logging through `@eliware/log` and a browser-safe entry.
 - Add TypeScript declarations, API documentation, tests, and a local smoke check.
 - Keep OAuth sign-in and consumer migrations outside this package.
