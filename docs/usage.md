@@ -130,7 +130,7 @@ const events = browserMail.connectEvents({
 });
 ```
 
-The client runs one event handler at a time. After a handler succeeds, the client posts its cursor to the acknowledgement route. The client advances its cursor only after that request succeeds. If a handler or acknowledgement fails, the client reports the error and closes the socket so the server can replay the event.
+The client runs one event handler at a time. After a handler succeeds, the client posts its cursor to the acknowledgement route. The client advances its cursor only after that request succeeds. If a handler or acknowledgement fails, the client reports the error, closes the socket, and stops automatic reconnects.
 
 Without `consumerId`, the client tracks the cursor in memory only. The client includes its current cursor when it reconnects. Store progress with `consumerId` when an application must continue after a new process starts.
 

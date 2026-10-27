@@ -82,6 +82,7 @@ export function createEventConnection({
     authenticated = false;
     try {
       const token = await getAccessToken();
+      if (stopped) return;
       if (typeof token !== "string" || token.length === 0) {
         throw new TypeError("getAccessToken must return a non-empty bearer token");
       }
@@ -99,6 +100,7 @@ export function createEventConnection({
             .then(() => processEvent(event))
             .catch((error) => {
               report(error);
+              stopped = true;
               socket.close(1011, "event processing failed");
             });
         },
@@ -110,6 +112,7 @@ export function createEventConnection({
         onError: report,
       });
     } catch (error) {
+      if (stopped) return;
       report(error);
       settleReady(error);
       scheduleReconnect(1006);

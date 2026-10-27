@@ -17,6 +17,7 @@ class FakeSocket {
   }
   close(code, reason) {
     this.closed = { code, reason };
+    this.emit("close", { code });
   }
   emit(name, value) {
     this.listeners.get(name)?.(value);
@@ -124,13 +125,21 @@ test("skips old events and closes after handler or acknowledgement errors", asyn
   const failingHandler = jest.fn(async () => {
     throw new Error("handler failed");
   });
-  const failure = await connect({ onEvent: failingHandler, onError: jest.fn() });
+  const socketCountBeforeFailure = FakeSocket.instances.length;
+  const failure = await connect({
+    onEvent: failingHandler,
+    onError: jest.fn(),
+    autoReconnect: true,
+    retryDelayMs: 10,
+  });
   failure.socket.emit("open");
   failure.socket.emit("message", { data: '{"type":"authenticated"}' });
   await failure.connection.ready;
   failure.socket.emit("message", { data: '{"event_id":"9"}' });
   await jest.advanceTimersByTimeAsync(0);
   expect(failure.socket.closed.code).toBe(1011);
+  expect(jest.getTimerCount()).toBe(0);
+  expect(FakeSocket.instances).toHaveLength(socketCountBeforeFailure + 1);
   failure.connection.close();
 
   const badCursor = await connect({ after: "1", onEvent: jest.fn(), onError: jest.fn() });
@@ -202,6 +211,46 @@ test("reports token provider failures", async () => {
     "getAccessToken must return a non-empty bearer token",
   );
   invalid.close();
+});
+
+test("does not open or reconnect when closed during token retrieval", async () => {
+  let resolveToken;
+  const token = new Promise((resolve) => {
+    resolveToken = resolve;
+  });
+  const onError = jest.fn();
+  const resolving = createEventConnection({
+    baseUrl: "https://mail.test",
+    getAccessToken: () => token,
+    WebSocketImpl: FakeSocket,
+    onEvent: jest.fn(),
+    onError,
+  });
+  const resolveReady = expect(resolving.ready).rejects.toThrow("closed by the client");
+  resolving.close();
+  resolveToken("test-value");
+  await resolveReady;
+
+  let rejectToken;
+  const rejectedToken = new Promise((_, reject) => {
+    rejectToken = reject;
+  });
+  const rejected = createEventConnection({
+    baseUrl: "https://mail.test",
+    getAccessToken: () => rejectedToken,
+    WebSocketImpl: FakeSocket,
+    onEvent: jest.fn(),
+    onError,
+  });
+  const rejectReady = expect(rejected.ready).rejects.toThrow("closed by the client");
+  rejected.close();
+  rejectToken(new Error("token provider failed"));
+  await rejectReady;
+  await Promise.resolve();
+  await jest.advanceTimersByTimeAsync(100);
+
+  expect(FakeSocket.instances).toHaveLength(0);
+  expect(onError).not.toHaveBeenCalled();
 });
 
 test("ignores a reconnect callback after the connection closes", async () => {

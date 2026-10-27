@@ -165,7 +165,7 @@ The connection object exposes `ready`, `cursor`, and `close()`. The `ready` prom
 
 The server accepts cursors from `0` through the maximum Snowflake ID. It requires decimal strings without leading zeroes, except for `0` itself.
 
-The client calls one event handler at a time. With `consumerId`, it acknowledges an event after its handler succeeds. It advances `cursor` only after the server accepts that acknowledgement. If event handling or acknowledgement fails, the client reports the error and closes the socket so the server can replay the event.
+The client calls one event handler at a time. With `consumerId`, it acknowledges an event after its handler succeeds. It advances `cursor` only after the server accepts that acknowledgement. If event handling or acknowledgement fails, the client reports the error, closes the socket, and stops automatic reconnects.
 
 Without `consumerId`, `cursor` remains in memory and is used when the connection reconnects. Store the cursor outside the client if it must survive a new process start. Make event handlers safe to run more than once.
 
