@@ -113,9 +113,9 @@ export function createEventConnection({
       });
     } catch (error) {
       if (stopped) return;
+      stopped = true;
       report(error);
       settleReady(error);
-      scheduleReconnect(1006);
     }
   }
 

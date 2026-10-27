@@ -186,19 +186,44 @@ test("skips old events and closes after handler or acknowledgement errors", asyn
 
 test("reports token provider failures", async () => {
   const onError = jest.fn();
+  const getAccessToken = jest.fn(async () => {
+    throw new Error("token unavailable");
+  });
   const connection = createEventConnection({
     baseUrl: "https://mail.test",
-    getAccessToken: async () => {
-      throw new Error("token unavailable");
-    },
+    getAccessToken,
     WebSocketImpl: FakeSocket,
     onEvent: jest.fn(),
     onError,
-    autoReconnect: false,
+    retryDelayMs: 10,
   });
   await expect(connection.ready).rejects.toThrow("token unavailable");
   expect(onError).toHaveBeenCalled();
+  await jest.advanceTimersByTimeAsync(100);
+  expect(getAccessToken).toHaveBeenCalledTimes(1);
+  expect(jest.getTimerCount()).toBe(0);
   connection.close();
+
+  let constructionAttempts = 0;
+  class WebSocketImpl {
+    constructor() {
+      constructionAttempts += 1;
+      throw new Error("socket construction failed");
+    }
+  }
+  const constructionFailure = createEventConnection({
+    baseUrl: "https://mail.test",
+    getAccessToken: () => "x",
+    WebSocketImpl,
+    onEvent: jest.fn(),
+    onError,
+    retryDelayMs: 10,
+  });
+  await expect(constructionFailure.ready).rejects.toThrow("socket construction failed");
+  await jest.advanceTimersByTimeAsync(100);
+  expect(constructionAttempts).toBe(1);
+  expect(jest.getTimerCount()).toBe(0);
+  constructionFailure.close();
 
   const invalid = createEventConnection({
     baseUrl: "https://mail.test",
