@@ -30,7 +30,8 @@ test("maps public methods to current mail-server API routes", async () => {
   await api.send({ to: ["eli@example.test"] });
   await api.sendMultipart(new FormData());
   await api.attachments.download("att-1");
-  await api.events.read({ after: "100", consumerId: "consumer-1", limit: 10 });
+  await api.events.read({ after: "100", limit: 10 });
+  await api.events.read({ consumerId: "consumer-1", limit: 10 });
   await api.events.read();
   await api.events.acknowledge("consumer-1", "101");
 
@@ -58,7 +59,8 @@ test("maps public methods to current mail-server API routes", async () => {
     "/api/domains/example.test",
     "/api/send",
     "/api/send-multipart",
-    "/api/events?after=100&consumer_id=consumer-1&limit=10",
+    "/api/events?after=100&limit=10",
+    "/api/events?consumer_id=consumer-1&limit=10",
     "/api/events",
     "/api/events/ack",
   ]);
@@ -72,7 +74,8 @@ test("maps public methods to current mail-server API routes", async () => {
 });
 
 test("requires valid identifiers and uncertain retry confirmation", () => {
-  const api = createApiMethods({ request: jest.fn(), requestJson: jest.fn() });
+  const requestJson = jest.fn();
+  const api = createApiMethods({ request: jest.fn(), requestJson });
 
   expect(() => api.messages.get("")).toThrow("id must be a non-empty string or number");
   expect(() => api.messages.get(null)).toThrow("id must be a non-empty string or number");
@@ -87,4 +90,8 @@ test("requires valid identifiers and uncertain retry confirmation", () => {
   );
   expect(() => api.events.acknowledge("", "1")).toThrow("consumerId must be a non-empty string");
   expect(() => api.events.acknowledge("consumer", "")).toThrow("cursor must be a non-empty string");
+  expect(() => api.events.read({ after: "100", consumerId: "consumer-1" })).toThrow(
+    "after and consumerId cannot be used together",
+  );
+  expect(requestJson).not.toHaveBeenCalled();
 });

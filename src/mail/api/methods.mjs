@@ -52,14 +52,18 @@ export function createApiMethods({ request, requestJson }) {
     },
   };
   const events = {
-    read: ({ after, consumerId, limit } = {}) =>
-      requestJson(
+    read: ({ after, consumerId, limit } = {}) => {
+      if (after != null && consumerId != null) {
+        throw new TypeError("after and consumerId cannot be used together");
+      }
+      return requestJson(
         withQuery("/api/events", {
           after,
           consumer_id: consumerId,
           limit,
         }),
-      ),
+      );
+    },
     acknowledge: (consumerId, cursor) => {
       if (typeof consumerId !== "string" || consumerId.length === 0) {
         throw new TypeError("consumerId must be a non-empty string");

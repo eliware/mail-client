@@ -101,7 +101,7 @@ Pass filter objects to `inbox.list()`, `messages.list()`, `sent.list()`, and `ev
 
 Inbound routes accept filters such as `limit`, `before`, `after`, `query`, `folder`, `domain`, `address`, `from`, and `to`. Sent routes accept `limit`, `before`, `after`, `query`, `from`, and `to`. Mail-server validates, caps, or ignores filters according to its API contract.
 
-`events.read()` returns `data.events`, `data.next_cursor`, and `data.has_more`. It maps `consumerId` to the `consumer_id` query parameter. The server rejects a call that includes both `after` and `consumerId`.
+`events.read()` returns `data.events`, `data.next_cursor`, and `data.has_more`. It maps `consumerId` to the `consumer_id` query parameter. It rejects calls that include both `after` and `consumerId`.
 
 The event acknowledgement method maps `consumerId` to `consumer_id` in its JSON body. Pass a stable consumer ID and a decimal cursor string.
 
