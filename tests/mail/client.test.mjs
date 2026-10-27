@@ -35,8 +35,7 @@ class FakeSocket {
 beforeEach(() => jest.useFakeTimers());
 afterEach(() => jest.useRealTimers());
 
-test("builds authenticated HTTP methods and connects authenticated events", async () => {
-  FakeSocket.instances = [];
+test("builds authenticated HTTP methods", async () => {
   const fetchImpl = jest.fn(
     async () => new Response(JSON.stringify({ data: {}, request_id: "req-1" }), { status: 200 }),
   );
@@ -44,35 +43,11 @@ test("builds authenticated HTTP methods and connects authenticated events", asyn
     baseUrl: "https://mail.example.test",
     getAccessToken: () => "server-token",
     fetchImpl,
-    WebSocketImpl: FakeSocket,
   });
 
   await client.messages.get("message-1");
   expect(fetchImpl.mock.calls[0][0].pathname).toBe("/api/messages/message-1");
   expect(fetchImpl.mock.calls[0][1].headers.get("authorization")).toBe("Bearer server-token");
-
-  const onEvent = jest.fn();
-  const connection = client.connectEvents({ onEvent });
-  await Promise.resolve();
-  const socket = FakeSocket.instances[0];
-  socket.emit("open");
-  const authFrame = JSON.parse(socket.sent[0]);
-  expect(authFrame.type).toBe("authenticate");
-  expect(typeof authFrame.token).toBe("string");
-  socket.emit("message", { data: JSON.stringify({ type: "authenticated" }) });
-  await connection.ready;
-  socket.emit("message", {
-    data: JSON.stringify({ event_id: "101", cursor: "101", event_type: "message.created" }),
-  });
-  await jest.advanceTimersByTimeAsync(0);
-
-  expect(onEvent).toHaveBeenCalledWith({
-    event_id: "101",
-    cursor: "101",
-    event_type: "message.created",
-  });
-  expect(connection.cursor).toBe("101");
-  connection.close();
 });
 
 test("validates the default client and event options", () => {

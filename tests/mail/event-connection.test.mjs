@@ -6,12 +6,15 @@ class FakeSocket {
   constructor(url) {
     this.url = url;
     this.listeners = new Map();
+    this.sent = [];
     FakeSocket.instances.push(this);
   }
   addEventListener(name, handler) {
     this.listeners.set(name, handler);
   }
-  send() {}
+  send(value) {
+    this.sent.push(value);
+  }
   close(code, reason) {
     this.closed = { code, reason };
   }
@@ -58,16 +61,23 @@ test("rejects malformed cursors and reports authentication failures", async () =
 });
 
 test("reconnects with the last acknowledged cursor and stops when closed", async () => {
+  const onEvent = jest.fn();
   const { connection, socket } = await connect({
     autoReconnect: true,
     retryDelayMs: 10,
     maxReconnectDelayMs: 20,
+    onEvent,
   });
   socket.emit("open");
+  const authFrame = JSON.parse(socket.sent[0]);
+  expect(authFrame.type).toBe("authenticate");
+  expect(typeof authFrame.token).toBe("string");
   socket.emit("message", { data: '{"type":"authenticated"}' });
   await connection.ready;
-  socket.emit("message", { data: '{"event_id":"1","cursor":"1"}' });
+  const event = { event_id: "1", cursor: "1", event_type: "message.created" };
+  socket.emit("message", { data: JSON.stringify(event) });
   await jest.advanceTimersByTimeAsync(0);
+  expect(onEvent).toHaveBeenCalledWith(event);
   expect(connection.cursor).toBe("1");
   socket.emit("close", { code: 1006 });
   await jest.advanceTimersByTimeAsync(10);

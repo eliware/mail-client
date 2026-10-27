@@ -1,30 +1,3 @@
-export function subscribe(socket, name, handler) {
-  if (typeof socket.addEventListener === "function") {
-    socket.addEventListener(name, handler);
-    return () => socket.removeEventListener?.(name, handler);
-  }
-  if (typeof socket.on === "function") {
-    socket.on(name, handler);
-    return () => socket.off?.(name, handler);
-  }
-  throw new TypeError("WebSocket must support event listeners");
-}
-
-export function eventData(value) {
-  const data = value?.data ?? value;
-  if (typeof data === "string") return data;
-  if (ArrayBuffer.isView(data)) return new TextDecoder().decode(data);
-  if (data instanceof ArrayBuffer) return new TextDecoder().decode(data);
-  throw new TypeError("WebSocket frame must contain JSON text");
-}
-
-export function socketUrl(baseUrl, cursor) {
-  const url = new URL("/ws", baseUrl);
-  url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
-  if (cursor !== null) url.searchParams.set("after", cursor);
-  return url.toString();
-}
-
 export function validateEventOptions({
   getAccessToken,
   WebSocketImpl,

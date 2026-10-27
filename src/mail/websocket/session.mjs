@@ -1,4 +1,5 @@
-import { eventData, subscribe } from "./utils.mjs";
+import { eventData } from "./frames.mjs";
+import { subscribe } from "./listeners.mjs";
 
 export function createWebSocketSession({
   url,

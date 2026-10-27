@@ -1,5 +1,6 @@
 import { createWebSocketSession } from "./websocket/session.mjs";
-import { socketUrl, validateEventOptions } from "./websocket/utils.mjs";
+import { socketUrl } from "./websocket/address.mjs";
+import { validateEventOptions } from "./websocket/options.mjs";
 
 const noop = () => {};
 
