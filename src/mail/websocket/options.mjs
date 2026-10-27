@@ -1,3 +1,5 @@
+import { isValidCursor } from "./cursor.mjs";
+
 export function validateEventOptions({
   getAccessToken,
   WebSocketImpl,
@@ -27,7 +29,7 @@ export function validateEventOptions({
   if (!Number.isSafeInteger(maxReconnectDelayMs) || maxReconnectDelayMs < retryDelayMs) {
     throw new TypeError("maxReconnectDelayMs must be a safe integer at least retryDelayMs");
   }
-  if (after !== undefined && (typeof after !== "string" || !/^\d+$/.test(after))) {
-    throw new TypeError("after must be a decimal cursor string");
+  if (after !== undefined && !isValidCursor(after)) {
+    throw new TypeError("after must be a decimal Snowflake cursor");
   }
 }

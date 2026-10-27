@@ -52,7 +52,7 @@ test("rejects malformed cursors and reports authentication failures", async () =
       onEvent: jest.fn(),
       after: "bad",
     }),
-  ).toThrow("after must be a decimal cursor string");
+  ).toThrow("after must be a decimal Snowflake cursor");
   const { connection, socket } = await connect();
   const ready = expect(connection.ready).rejects.toThrow("authentication closed with code 1008");
   socket.emit("close", { code: 1008 });
@@ -141,6 +141,21 @@ test("skips old events and closes after handler or acknowledgement errors", asyn
   await jest.advanceTimersByTimeAsync(0);
   expect(badCursor.socket.closed.code).toBe(1011);
   badCursor.connection.close();
+
+  const onMalformedEvent = jest.fn();
+  const malformedEvent = await connect({
+    onEvent: onMalformedEvent,
+    onError: jest.fn(),
+  });
+  malformedEvent.socket.emit("open");
+  malformedEvent.socket.emit("message", { data: '{"type":"authenticated"}' });
+  await malformedEvent.connection.ready;
+  malformedEvent.socket.emit("message", { data: '{"event_id":"not-a-number"}' });
+  await jest.advanceTimersByTimeAsync(0);
+  expect(onMalformedEvent).not.toHaveBeenCalled();
+  expect(malformedEvent.connection.cursor).toBeNull();
+  expect(malformedEvent.socket.closed.code).toBe(1011);
+  malformedEvent.connection.close();
 
   const ackFailure = await connect({
     consumerId: "consumer",

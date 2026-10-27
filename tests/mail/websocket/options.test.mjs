@@ -36,5 +36,7 @@ test("rejects invalid consumers, retry values, and cursors", () => {
   expect(() => validateEventOptions({ ...valid, retryDelayMs: Infinity })).toThrow();
   expect(() => validateEventOptions({ ...valid, maxReconnectDelayMs: 0 })).toThrow();
   expect(() => validateEventOptions({ ...valid, maxReconnectDelayMs: Infinity })).toThrow();
-  expect(() => validateEventOptions({ ...valid, after: "bad" })).toThrow();
+  expect(() => validateEventOptions({ ...valid, after: "bad" })).toThrow(
+    "after must be a decimal Snowflake cursor",
+  );
 });

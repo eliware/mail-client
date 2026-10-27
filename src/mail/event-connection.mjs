@@ -1,5 +1,6 @@
 import { createWebSocketSession } from "./websocket/session.mjs";
 import { socketUrl } from "./websocket/address.mjs";
+import { isValidCursor } from "./websocket/cursor.mjs";
 import { validateEventOptions } from "./websocket/options.mjs";
 
 const noop = () => {};
@@ -67,18 +68,13 @@ export function createEventConnection({
 
   async function processEvent(event) {
     const eventCursor = event.cursor ?? event.event_id;
-    if (typeof eventCursor === "string" && cursor !== null) {
-      try {
-        if (BigInt(eventCursor) <= BigInt(cursor)) return;
-      } catch {
-        throw new TypeError("event cursor must be a decimal string");
-      }
+    if (!isValidCursor(eventCursor)) {
+      throw new TypeError("event cursor must be a decimal Snowflake cursor");
     }
+    if (cursor !== null && BigInt(eventCursor) <= BigInt(cursor)) return;
     await onEvent(event);
-    if (typeof eventCursor === "string") {
-      if (consumerId !== undefined) await acknowledgeEvent(consumerId, eventCursor);
-      cursor = eventCursor;
-    }
+    if (consumerId !== undefined) await acknowledgeEvent(consumerId, eventCursor);
+    cursor = eventCursor;
   }
 
   async function connect() {
