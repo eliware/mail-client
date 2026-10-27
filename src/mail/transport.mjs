@@ -5,6 +5,12 @@ const defaultTimeoutMs = 15_000;
 const noOperation = () => {};
 const silentLogger = { debug: noOperation, warn: noOperation, error: noOperation };
 
+function isPlainObject(value) {
+  if (value === null || typeof value !== "object") return false;
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
+}
+
 async function errorPayload(response) {
   try {
     return await response.clone().json();
@@ -56,12 +62,9 @@ export function createTransport({
     headers.set("accept", "application/json");
     headers.set("authorization", `Bearer ${token}`);
     const body = options.body;
-    const isFormData = typeof FormData !== "undefined" && body instanceof FormData;
-    let requestBody = body;
-    if (body !== undefined && typeof body === "object" && body !== null && !isFormData) {
-      requestBody = JSON.stringify(body);
-    }
-    if (requestBody !== undefined && !isFormData && !headers.has("content-type")) {
+    const isJsonBody = isPlainObject(body);
+    const requestBody = isJsonBody ? JSON.stringify(body) : body;
+    if (isJsonBody && !headers.has("content-type")) {
       headers.set("content-type", "application/json");
     }
 

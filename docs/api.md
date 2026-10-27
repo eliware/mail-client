@@ -32,7 +32,7 @@ const response = await mail.request("/api/status");
 const envelope = await response.json();
 ```
 
-The client sets `Accept: application/json` and `Authorization: Bearer <token>`. It uppercases the HTTP method. It serializes plain object bodies as JSON and sets the JSON content type when needed. It leaves `FormData` bodies unmodified so Fetch can set the multipart boundary.
+The client sets `Accept: application/json` and `Authorization: Bearer <token>`. It uppercases the HTTP method. It serializes plain object bodies as JSON and sets the JSON content type when needed. It passes these body types through unchanged: strings, `FormData`, `Blob`, `URLSearchParams`, and byte arrays.
 
 The client throws `MailApiError` for every non-2xx response. Use the native response from a 2xx call for binary data, streaming, and headers.
 

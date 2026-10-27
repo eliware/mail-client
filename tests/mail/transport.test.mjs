@@ -50,7 +50,7 @@ test("sends bearer JSON requests with timeout and caller cancellation", async ()
   expect(logger.debug).toHaveBeenCalled();
 });
 
-test("keeps form data intact and passes string bodies through", async () => {
+test("serializes plain objects and preserves native Fetch body types", async () => {
   const fetchImpl = jest.fn(async () => goodResponse());
   const transport = createTransport({
     baseUrl: "https://mail.test",
@@ -65,10 +65,26 @@ test("keeps form data intact and passes string bodies through", async () => {
     body: "body",
     signal: new AbortController().signal,
   });
+  const blob = new Blob(["attachment"], { type: "text/plain" });
+  const params = new URLSearchParams({ to: "eli@example.test" });
+  const bytes = new Uint8Array([1, 2, 3]);
+  await transport.request("/blob", { method: "POST", body: blob });
+  await transport.request("/params", { method: "POST", body: params });
+  await transport.request("/bytes", { method: "POST", body: bytes });
+  await transport.request("/json", { method: "POST", body: { ok: true } });
   expect(fetchImpl.mock.calls[0][1].body).toBe(form);
   expect(fetchImpl.mock.calls[0][1].headers.has("content-type")).toBe(false);
   expect(fetchImpl.mock.calls[1][1].body).toBe("body");
+  expect(fetchImpl.mock.calls[1][1].headers.has("content-type")).toBe(false);
   expect(fetchImpl.mock.calls[1][1].signal).toBeInstanceOf(AbortSignal);
+  expect(fetchImpl.mock.calls[2][1].body).toBe(blob);
+  expect(fetchImpl.mock.calls[2][1].headers.has("content-type")).toBe(false);
+  expect(fetchImpl.mock.calls[3][1].body).toBe(params);
+  expect(fetchImpl.mock.calls[3][1].headers.has("content-type")).toBe(false);
+  expect(fetchImpl.mock.calls[4][1].body).toBe(bytes);
+  expect(fetchImpl.mock.calls[4][1].headers.has("content-type")).toBe(false);
+  expect(fetchImpl.mock.calls[5][1].body).toBe('{"ok":true}');
+  expect(fetchImpl.mock.calls[5][1].headers.get("content-type")).toBe("application/json");
 });
 
 test("reports API, network, and token failures without secrets", async () => {
