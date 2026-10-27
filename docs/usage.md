@@ -134,7 +134,7 @@ The client runs one event handler at a time. After a handler succeeds, the clien
 
 Without `consumerId`, the client tracks the cursor in memory only. The client includes its current cursor when it reconnects. Store progress with `consumerId` when an application must continue after a new process starts.
 
-The client reconnects after unexpected socket closure by default. Set `autoReconnect` to `false` to disable reconnects. Call `events.close()` to stop the connection and its reconnect timer.
+The client reconnects after unexpected socket closure or a token-provider failure by default. Set `autoReconnect` to `false` to disable reconnects. Call `events.close()` to stop the connection and its reconnect timer.
 
 ## Report errors
 

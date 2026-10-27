@@ -44,6 +44,7 @@ export function createEventConnection({
     resolveReady = resolve;
     rejectReady = reject;
   });
+  void ready.catch(noop);
 
   function report(error) {
     try {
@@ -80,12 +81,25 @@ export function createEventConnection({
   async function connect() {
     if (stopped) return;
     authenticated = false;
+    let token;
     try {
-      const token = await getAccessToken();
+      token = await getAccessToken();
+    } catch (error) {
       if (stopped) return;
-      if (typeof token !== "string" || token.length === 0) {
-        throw new TypeError("getAccessToken must return a non-empty bearer token");
-      }
+      report(error);
+      settleReady(error);
+      scheduleReconnect(1006);
+      return;
+    }
+    if (stopped) return;
+    if (typeof token !== "string" || token.length === 0) {
+      const error = new TypeError("getAccessToken must return a non-empty bearer token");
+      stopped = true;
+      report(error);
+      settleReady(error);
+      return;
+    }
+    try {
       socket = createWebSocketSession({
         url: socketUrl(baseUrl, cursor),
         token,
@@ -112,7 +126,6 @@ export function createEventConnection({
         onError: report,
       });
     } catch (error) {
-      if (stopped) return;
       stopped = true;
       report(error);
       settleReady(error);

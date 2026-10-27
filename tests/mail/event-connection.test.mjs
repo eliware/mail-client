@@ -1,28 +1,6 @@
 import { afterEach, beforeEach, expect, jest, test } from "@jest/globals";
 import { createEventConnection } from "../../src/mail/event-connection.mjs";
-
-class FakeSocket {
-  static instances = [];
-  constructor(url) {
-    this.url = url;
-    this.listeners = new Map();
-    this.sent = [];
-    FakeSocket.instances.push(this);
-  }
-  addEventListener(name, handler) {
-    this.listeners.set(name, handler);
-  }
-  send(value) {
-    this.sent.push(value);
-  }
-  close(code, reason) {
-    this.closed = { code, reason };
-    this.emit("close", { code });
-  }
-  emit(name, value) {
-    this.listeners.get(name)?.(value);
-  }
-}
+import { FakeSocket } from "../../test-fixtures/fake-socket.mjs";
 
 beforeEach(() => {
   jest.useFakeTimers();
@@ -186,8 +164,11 @@ test("skips old events and closes after handler or acknowledgement errors", asyn
 
 test("reports token provider failures", async () => {
   const onError = jest.fn();
-  const getAccessToken = jest.fn(async () => {
-    throw new Error("token unavailable");
+  let tokenAttempts = 0;
+  const getAccessToken = jest.fn(() => {
+    tokenAttempts += 1;
+    if (tokenAttempts === 1) return Promise.reject(new Error("token unavailable"));
+    return "test-value";
   });
   const connection = createEventConnection({
     baseUrl: "https://mail.test",
@@ -199,8 +180,9 @@ test("reports token provider failures", async () => {
   });
   await expect(connection.ready).rejects.toThrow("token unavailable");
   expect(onError).toHaveBeenCalled();
-  await jest.advanceTimersByTimeAsync(100);
-  expect(getAccessToken).toHaveBeenCalledTimes(1);
+  await jest.advanceTimersByTimeAsync(10);
+  expect(getAccessToken).toHaveBeenCalledTimes(2);
+  expect(FakeSocket.instances).toHaveLength(1);
   expect(jest.getTimerCount()).toBe(0);
   connection.close();
 
@@ -225,17 +207,30 @@ test("reports token provider failures", async () => {
   expect(jest.getTimerCount()).toBe(0);
   constructionFailure.close();
 
+  const invalidTokenProvider = jest.fn(() => 42);
   const invalid = createEventConnection({
     baseUrl: "https://mail.test",
-    getAccessToken: () => 42,
+    getAccessToken: invalidTokenProvider,
     WebSocketImpl: FakeSocket,
     onEvent: jest.fn(),
-    autoReconnect: false,
+    retryDelayMs: 10,
   });
   await expect(invalid.ready).rejects.toThrow(
     "getAccessToken must return a non-empty bearer token",
   );
+  await jest.advanceTimersByTimeAsync(100);
+  expect(invalidTokenProvider).toHaveBeenCalledTimes(1);
   invalid.close();
+});
+
+test("allows close before readiness when callers ignore the ready promise", () => {
+  const connection = createEventConnection({
+    baseUrl: "https://mail.test",
+    getAccessToken: () => new Promise(() => {}),
+    WebSocketImpl: FakeSocket,
+    onEvent: jest.fn(),
+  });
+  connection.close();
 });
 
 test("does not open or reconnect when closed during token retrieval", async () => {

@@ -54,6 +54,7 @@ directives:
       - Wait for `{"type":"authenticated"}` before delivering events to callers.
       - Support different mail-server and mail-web domains without tokens in WebSocket URLs.
       - Reconnect safely and continue events from the last acknowledged cursor.
+      - Retry WebSocket setup after token provider failures when automatic reconnect is enabled.
       - Let stable consumer IDs acknowledge processed event cursors through the HTTP API.
       - Move durable cursors only after handlers and server acknowledgements succeed.
       - Tolerate repeated events and refresh current data through the HTTP API after notifications.

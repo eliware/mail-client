@@ -29,7 +29,7 @@
   ],
   "scripts": {
     "test": "eliware-test",
-    "smoke": "node test-fixtures/smoke.mjs",
+    "smoke": "node examples/mail-client-smoke.mjs",
     "lint": "eliware-test --lint",
     "audit": "eliware-test --audit",
     "format": "eliware-test --format",
