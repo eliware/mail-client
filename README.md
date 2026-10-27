@@ -23,11 +23,8 @@ Mail client library for the Eliware mail platform.
 
 ## Features
 
-Call the mail-server HTTP API and receive event updates from Node.js and browser applications.
-Provide bearer credentials through a host token provider.
-Keep response envelopes, request IDs, and response metadata available to callers.
-Use `@eliware/log` by default in Node.js. Inject a logger in browser applications when needed.
-Build and publish this library before rewriting mail-cli, mail-discord, or mail-web.
+Call the mail-server HTTP API and receive WebSocket events from Node.js and browser applications.
+Provide bearer tokens through the host application and keep API responses available to callers.
 
 ## Requirements
 
@@ -35,7 +32,7 @@ Use Node.js 26 or later. Browser applications require Fetch, Headers, AbortSigna
 
 ## Setup
 
-Install the published package with `npm install @eliware/mail-client`.
+After the npm release, install the package with `npm install @eliware/mail-client`.
 Set the mail API URL and a bearer-token provider in the host application.
 Read the [usage guide](docs/usage.md) for configuration details.
 
@@ -70,12 +67,11 @@ Do not expose static API keys to browser code.
 
 ## API
 
-Read the [API reference](docs/api.md) for client options, HTTP methods, events, logging, and errors.
-The client supports mail-server WebSocket first-message authentication.
+Read the [API reference](docs/api.md) for client options, methods, events, logging, and errors.
 
 ## Packaging
 
-The package publishes to npm with provenance.
+Use the npm publication workflow with provenance.
 Use version tags that match `package.json`.
 Follow approved release steps before you publish a tag.
 
