@@ -6,14 +6,14 @@ The package root exports `createMailClient` and `MailApiError`. The TypeScript d
 
 Call `createMailClient(options)` to create an HTTP and WebSocket client.
 
-| Option           | Required | Default                                  | Description                                    |
-| ---------------- | -------- | ---------------------------------------- | ---------------------------------------------- |
-| `baseUrl`        | Yes      | None                                     | HTTP or HTTPS base address for mail-server.    |
-| `getAccessToken` | Yes      | None                                     | Returns a bearer token as a string or promise. |
-| `fetchImpl`      | No       | `globalThis.fetch`                       | Supplies the Fetch function for HTTP requests. |
-| `WebSocketImpl`  | No       | `globalThis.WebSocket`                   | Supplies the WebSocket constructor.            |
-| `timeoutMs`      | No       | `15000`                                  | Sets the timeout for each HTTP request.        |
-| `logger`         | No       | Node.js: `@eliware/log`, browser: silent | Supplies `debug`, `warn`, and `error` methods. |
+| Option           | Required | Default                                     | Description                                    |
+| ---------------- | -------- | ------------------------------------------- | ---------------------------------------------- |
+| `baseUrl`        | Yes      | None                                        | HTTP or HTTPS base address for mail-server.    |
+| `getAccessToken` | Yes      | None                                        | Returns a bearer token as a string or promise. |
+| `fetchImpl`      | No       | `globalThis.fetch`                          | Supplies the Fetch function for HTTP requests. |
+| `WebSocketImpl`  | No       | `globalThis.WebSocket`                      | Supplies the WebSocket constructor.            |
+| `timeoutMs`      | No       | `15000`                                     | Sets the timeout for each HTTP request.        |
+| `logger`         | No       | Node.js: `@eliware/common`, browser: silent | Supplies `debug`, `warn`, and `error` methods. |
 
 Use an HTTP or HTTPS base address without a path, query, fragment, user name, or password. The client rejects request paths that resolve to a different address.
 
@@ -159,6 +159,7 @@ The client waits for this server frame before it delivers events:
 | --------------------- | ------------- | --------------------------------------------------------------------------- |
 | `onEvent(event)`      | Required      | Processes one JSON event. A returned promise delays cursor acknowledgement. |
 | `onError(error)`      | No operation  | Receives socket, handler, and acknowledgement errors.                       |
+| `logger`              | Client logger | Overrides the logger for this event connection.                             |
 | `after`               | Live edge     | Starts event replay after a decimal cursor.                                 |
 | `consumerId`          | None          | Enables server-side cursor acknowledgements.                                |
 | `autoReconnect`       | `true`        | Reconnects after unexpected closure.                                        |
@@ -178,6 +179,6 @@ The event has `event_id`, `cursor`, `event_type`, `occurred_at`, and `payload` f
 
 ## Runtime logging
 
-The Node.js entry uses `@eliware/log` by default. The browser entry has no Node-only logging import and uses a silent logger by default. Supply an object with `debug`, `warn`, and `error` methods to inject a logger.
+The Node.js entry uses timestamped JSON logs through `@eliware/common` by default. Set `MAIL_CLIENT_LOG_LEVEL` or `LOG_LEVEL` to `debug` to enable debug records. The browser entry has no Node-only logging import and uses a silent logger by default. Supply an object with `debug`, `warn`, and `error` methods to inject a logger.
 
-The client logs HTTP methods, response statuses, error names, and request IDs. It does not log bearer tokens, message bodies, attachment bytes, or full request addresses.
+The client logs HTTP methods, response statuses, durations, error names, request IDs, and WebSocket lifecycle details. It does not log bearer tokens, message bodies, attachment bytes, event payloads, or full request addresses. Pass `logger` in event connection options to override the client logger for a WebSocket connection.

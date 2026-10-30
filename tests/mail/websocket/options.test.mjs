@@ -12,6 +12,8 @@ const valid = {
 
 test("accepts valid optional event settings", () => {
   expect(() => validateEventOptions(valid)).not.toThrow();
+  const logger = { debug() {}, warn() {}, error() {} };
+  expect(() => validateEventOptions({ ...valid, logger })).not.toThrow();
   expect(() =>
     validateEventOptions({
       ...valid,
@@ -27,6 +29,18 @@ test("rejects invalid required callbacks and constructors", () => {
   expect(() => validateEventOptions({ ...valid, WebSocketImpl: null })).toThrow();
   expect(() => validateEventOptions({ ...valid, onEvent: null })).toThrow();
   expect(() => validateEventOptions({ ...valid, onError: null })).toThrow();
+});
+
+test("rejects logger objects without all required methods", () => {
+  expect(() => validateEventOptions({ ...valid, logger: {} })).toThrow(
+    "logger must provide debug, warn, and error methods",
+  );
+  expect(() => validateEventOptions({ ...valid, logger: { debug() {} } })).toThrow(
+    "logger must provide debug, warn, and error methods",
+  );
+  expect(() => validateEventOptions({ ...valid, logger: { debug() {}, warn() {} } })).toThrow(
+    "logger must provide debug, warn, and error methods",
+  );
 });
 
 test("rejects invalid consumers, retry values, and cursors", () => {

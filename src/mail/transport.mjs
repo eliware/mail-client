@@ -53,8 +53,25 @@ export function createTransport({
     const url = new URL(path, `${apiOrigin}/`);
     if (url.origin !== apiOrigin) throw new TypeError("path must use the configured API origin");
 
-    const token = await getAccessToken();
+    const method = String(options.method ?? "GET").toUpperCase();
+    const startedAt = Date.now();
+    logger.debug("Mail API request started", { method });
+    let token;
+    try {
+      token = await getAccessToken();
+    } catch (error) {
+      logger.error("Mail API access token provider failed", {
+        method,
+        durationMs: Date.now() - startedAt,
+        errorName: typeof error?.name === "string" ? error.name : "Error",
+      });
+      throw error;
+    }
     if (typeof token !== "string" || token.length === 0) {
+      logger.error("Mail API access token provider returned an invalid token", {
+        method,
+        durationMs: Date.now() - startedAt,
+      });
       throw new TypeError("getAccessToken must return a non-empty bearer token");
     }
 
@@ -72,12 +89,15 @@ export function createTransport({
     const signal = options.signal
       ? AbortSignal.any([options.signal, timeoutSignal])
       : timeoutSignal;
-    const method = String(options.method ?? "GET").toUpperCase();
     let response;
     try {
       response = await fetchImpl(url, { ...options, method, headers, body: requestBody, signal });
     } catch (error) {
-      logger.error("Mail API request failed", { method, errorName: error?.name ?? "Error" });
+      logger.error("Mail API request failed", {
+        method,
+        durationMs: Date.now() - startedAt,
+        errorName: typeof error?.name === "string" ? error.name : "Error",
+      });
       throw error;
     }
     if (!response.ok) {
@@ -89,6 +109,7 @@ export function createTransport({
       logger.warn("Mail API request failed", {
         method,
         status: error.status,
+        durationMs: Date.now() - startedAt,
         code: error.code,
         requestId: error.requestId,
       });
@@ -97,6 +118,7 @@ export function createTransport({
     logger.debug("Mail API request completed", {
       method,
       status: response.status,
+      durationMs: Date.now() - startedAt,
       requestId: response.headers.get("x-request-id"),
     });
     return response;

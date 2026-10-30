@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, expect, jest, test } from "@jest/globals";
-import { createEventConnection } from "../../src/mail/event-connection.mjs";
-import { FakeSocket } from "../../test-fixtures/fake-socket.mjs";
+import { createEventConnection } from "../../../src/mail/event/connection.mjs";
+import { FakeSocket } from "../../../test-fixtures/fake-socket.mjs";
 
 beforeEach(() => {
   jest.useFakeTimers();

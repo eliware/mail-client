@@ -2,11 +2,11 @@
 
 ## Project
 
-Build the shared mail-server API client library for Eliware.
+See README.md for the repository purpose, owner, scope, and boundaries.
 
 ## Scope and boundaries
 
-Use specs/directives.yaml for repository scope and limits.
+Keep repository requirements in specs/directives.yaml.
 
 ## Layout
 
@@ -33,7 +33,7 @@ Keep credentials, secret values, private data, and runtime state out of Git.
 
 ## Changes
 
-Keep each document in the repository that owns its content.
+Keep each document in the repository that owns its content. Update its nearest index when you add a document.
 
 ## Library
 

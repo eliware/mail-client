@@ -1,5 +1,5 @@
 import { createApiMethods } from "./api/methods.mjs";
-import { createEventConnection } from "./event-connection.mjs";
+import { createEventConnection } from "./event/connection.mjs";
 import { createTransport } from "./transport.mjs";
 
 export function createMailClient(options = {}) {
@@ -15,6 +15,7 @@ export function createMailClient(options = {}) {
         getAccessToken: options.getAccessToken,
         WebSocketImpl: settings.WebSocketImpl ?? options.WebSocketImpl,
         acknowledgeEvent: api.events.acknowledge,
+        logger: settings.logger ?? options.logger,
       });
     },
   };

@@ -23,8 +23,7 @@ Mail client library for the Eliware mail platform.
 
 ## Features
 
-Call the mail-server HTTP API and receive WebSocket events from Node.js and browser applications.
-Provide bearer tokens through the host application and keep API responses available to callers.
+Call the mail-server API from Node.js and browser applications. Receive WebSocket events and preserve server response envelopes.
 
 ## Requirements
 
@@ -32,38 +31,27 @@ Use Node.js 26 or later. Browser applications require Fetch, Headers, AbortSigna
 
 ## Setup
 
-After the npm release, install the package with `npm install @eliware/mail-client`.
-Set the mail API URL and a bearer-token provider in the host application.
-Read the [usage guide](docs/usage.md) for configuration details.
+Install the package with `npm install @eliware/mail-client`. Read the [usage guide](docs/usage.md) to configure the API URL and bearer-token provider.
 
 ## Usage
 
-Read the [usage guide](docs/usage.md) and [release notes](RELEASE_NOTES.md).
-The [basic example](examples/README.md) requests mail API status.
+Read the [usage guide](docs/usage.md), [API reference](docs/api.md), and [release notes](RELEASE_NOTES.md). Find runnable examples in [examples/README.md](examples/README.md).
 
 ## Development
 
-Read [AGENTS.md](AGENTS.md) before changing files.
-Read the [documentation index](docs/README.md) and [specifications index](specs/README.md) for package guidance.
-Run `npm ci` to install locked dependencies.
+Read [AGENTS.md](AGENTS.md), [documentation](docs/README.md), and [specifications](specs/README.md) before changing files. Run `npm ci` to install locked dependencies.
 
 ## Testing
 
-Run `npm test` for aggregate checks.
-Run `npm run smoke` for a local HTTP and WebSocket check.
-Run `npm run typecheck` to check TypeScript declarations.
-Run `npm run pack` to check package contents.
+Run `npm test` for aggregate checks. Run `npm run smoke` for an HTTP and WebSocket check.
 
 ## Troubleshooting
 
-Check the API URL, bearer-token provider, and network access when a request fails.
-Read the [API reference](docs/api.md) for errors and response details.
+Read the [troubleshooting guide](docs/troubleshooting.md) for common API and connection problems.
 
 ## Security
 
-Keep API keys and temporary credentials in approved secret stores.
-Do not log bearer tokens.
-Do not expose static API keys to browser code.
+Keep long-lived API tokens in server-side secret stores. Do not expose them to browser code or logs.
 
 ## API
 
@@ -71,9 +59,7 @@ Read the [API reference](docs/api.md) for client options, methods, events, loggi
 
 ## Packaging
 
-Use the npm publication workflow with provenance.
-Use version tags that match `package.json`.
-Follow approved release steps before you publish a tag.
+Follow approved release steps before you publish a version. Read [release notes](RELEASE_NOTES.md) for package changes.
 
 ## Examples
 

@@ -6,3 +6,4 @@ This directory contains user and API documentation for `@eliware/mail-client`.
 
 - [Usage](usage.md)
 - [API reference](api.md)
+- [Troubleshooting](troubleshooting.md)

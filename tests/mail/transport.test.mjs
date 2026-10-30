@@ -110,6 +110,29 @@ test("reports API, network, and token failures without secrets", async () => {
   await expect(noToken.request("/api/status")).rejects.toThrow(
     "getAccessToken must return a non-empty bearer token",
   );
+
+  const tokenFailure = createTransport({
+    baseUrl: "https://mail.test",
+    getAccessToken: () => {
+      throw new Error("provider unavailable");
+    },
+    logger,
+  });
+  await expect(tokenFailure.request("/api/status")).rejects.toThrow("provider unavailable");
+  const nonErrorTokenFailure = createTransport({
+    baseUrl: "https://mail.test",
+    getAccessToken: () => Promise.reject(null),
+    logger,
+  });
+  await expect(nonErrorTokenFailure.request("/api/status")).rejects.toBeNull();
+  const invalidToken = createTransport({
+    baseUrl: "https://mail.test",
+    getAccessToken: () => "",
+    logger,
+  });
+  await expect(invalidToken.request("/api/status")).rejects.toThrow(
+    "getAccessToken must return a non-empty bearer token",
+  );
 });
 
 test("returns a safe fallback when an error response cannot be read", async () => {

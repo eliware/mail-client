@@ -7,6 +7,7 @@ export function validateEventOptions({
   onError,
   consumerId,
   acknowledgeEvent,
+  logger,
   retryDelayMs,
   maxReconnectDelayMs,
   after,
@@ -17,6 +18,14 @@ export function validateEventOptions({
     throw new TypeError("WebSocketImpl must be a constructor");
   if (typeof onEvent !== "function") throw new TypeError("onEvent must be a function");
   if (typeof onError !== "function") throw new TypeError("onError must be a function");
+  if (
+    logger !== undefined &&
+    (typeof logger?.debug !== "function" ||
+      typeof logger?.warn !== "function" ||
+      typeof logger?.error !== "function")
+  ) {
+    throw new TypeError("logger must provide debug, warn, and error methods");
+  }
   if (consumerId !== undefined && (typeof consumerId !== "string" || consumerId.length === 0)) {
     throw new TypeError("consumerId must be a non-empty string");
   }

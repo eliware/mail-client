@@ -43,6 +43,7 @@ export interface EventConnectionOptions {
   retryDelayMs?: number;
   maxReconnectDelayMs?: number;
   WebSocketImpl?: WebSocketFactory;
+  logger?: MailLogger;
 }
 
 export interface EventConnection {

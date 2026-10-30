@@ -1,6 +1,6 @@
 {
   "name": "@eliware/mail-client",
-  "version": "15.0.1",
+  "version": "15.0.2",
   "type": "module",
   "description": "Mail client library for the Eliware mail platform.",
   "keywords": [
@@ -41,7 +41,7 @@
     "node": ">=26"
   },
   "dependencies": {
-    "@eliware/log": "^15.0.0"
+    "@eliware/common": "^15.0.1"
   },
   "devDependencies": {
     "@eliware/test": "^15.0.1",
