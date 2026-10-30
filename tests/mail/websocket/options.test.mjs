@@ -19,7 +19,6 @@ test("accepts valid optional event settings", () => {
       ...valid,
       consumerId: "consumer",
       acknowledgeEvent: () => {},
-      after: "10",
     }),
   ).not.toThrow();
 });
@@ -53,4 +52,12 @@ test("rejects invalid consumers, retry values, and cursors", () => {
   expect(() => validateEventOptions({ ...valid, after: "bad" })).toThrow(
     "after must be a decimal Snowflake cursor",
   );
+  expect(() =>
+    validateEventOptions({
+      ...valid,
+      after: "10",
+      consumerId: "consumer",
+      acknowledgeEvent: () => {},
+    }),
+  ).toThrow("after and consumerId cannot be used together");
 });

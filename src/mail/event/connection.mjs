@@ -93,7 +93,7 @@ export function createEventConnection({
     }
     try {
       socket = createWebSocketSession({
-        url: socketUrl(baseUrl, cursor),
+        url: socketUrl(baseUrl, consumerId === undefined ? cursor : null, consumerId),
         token,
         WebSocketImpl,
         onAuthenticated: () => {

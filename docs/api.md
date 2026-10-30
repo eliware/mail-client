@@ -141,7 +141,7 @@ The error message uses the API error message when available. Network errors and 
 
 ### `connectEvents(options)`
 
-Open the `/ws` route and receive event notifications. The WebSocket URL uses `ws` for an HTTP base address and `wss` for an HTTPS base address. The client puts the optional `after` cursor in the URL and excludes tokens.
+Open the `/ws` route and receive event notifications. The WebSocket URL uses `ws` for an HTTP base address and `wss` for an HTTPS base address. The client puts the optional `after` cursor or `consumer_id` in the URL and excludes tokens.
 
 After the socket opens, the client sends this JSON frame as its first message:
 
@@ -155,23 +155,25 @@ The client waits for this server frame before it delivers events:
 { "type": "authenticated" }
 ```
 
-| Option                | Default       | Description                                                                 |
-| --------------------- | ------------- | --------------------------------------------------------------------------- |
-| `onEvent(event)`      | Required      | Processes one JSON event. A returned promise delays cursor acknowledgement. |
-| `onError(error)`      | No operation  | Receives socket, handler, and acknowledgement errors.                       |
-| `logger`              | Client logger | Overrides the logger for this event connection.                             |
-| `after`               | Live edge     | Starts event replay after a decimal cursor.                                 |
-| `consumerId`          | None          | Enables server-side cursor acknowledgements.                                |
-| `autoReconnect`       | `true`        | Reconnects after unexpected closure.                                        |
-| `retryDelayMs`        | `500`         | Sets the first reconnect wait interval.                                     |
-| `maxReconnectDelayMs` | `30000`       | Sets the longest reconnect wait interval.                                   |
-| `WebSocketImpl`       | Client option | Overrides the WebSocket constructor for this connection.                    |
+| Option                | Default       | Description                                                                    |
+| --------------------- | ------------- | ------------------------------------------------------------------------------ |
+| `onEvent(event)`      | Required      | Processes one JSON event. A returned promise delays cursor acknowledgement.    |
+| `onError(error)`      | No operation  | Receives socket, handler, and acknowledgement errors.                          |
+| `logger`              | Client logger | Overrides the logger for this event connection.                                |
+| `after`               | Live edge     | Starts event replay after a decimal cursor.                                    |
+| `consumerId`          | None          | Sends `consumer_id` to the server and enables durable cursor acknowledgements. |
+| `autoReconnect`       | `true`        | Reconnects after unexpected closure.                                           |
+| `retryDelayMs`        | `500`         | Sets the first reconnect wait interval.                                        |
+| `maxReconnectDelayMs` | `30000`       | Sets the longest reconnect wait interval.                                      |
+| `WebSocketImpl`       | Client option | Overrides the WebSocket constructor for this connection.                       |
 
 The connection object exposes `ready`, `cursor`, and `close()`. The `ready` promise resolves after the first authentication acknowledgement. It rejects if the first token request fails or the socket closes before authentication. A rejected token request retries automatically when `autoReconnect` is enabled. An invalid token value or WebSocket construction error stops automatic reconnects.
 
 The server accepts cursors from `0` through the maximum Snowflake ID. It requires decimal strings without leading zeroes, except for `0` itself.
 
-The client calls one event handler at a time. With `consumerId`, it acknowledges an event after its handler succeeds. It advances `cursor` only after the server accepts that acknowledgement. If event handling or acknowledgement fails, the client reports the error, closes the socket, and stops automatic reconnects.
+The client calls one event handler at a time. With `consumerId`, it sends that ID in the WebSocket URL and acknowledges each event after its handler succeeds. The server stores progress for that consumer. The client advances `cursor` only after the server accepts the acknowledgement. If event handling or acknowledgement fails, the client reports the error, closes the socket, and stops automatic reconnects.
+
+Do not pass both `after` and `consumerId`. The server uses `after` for cursor-based replay and `consumer_id` for durable replay. The server rejects a request that includes both values.
 
 Without `consumerId`, `cursor` remains in memory and is used when the connection reconnects. Store the cursor outside the client if it must survive a new process start. Make event handlers safe to run more than once.
 

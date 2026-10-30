@@ -41,4 +41,7 @@ export function validateEventOptions({
   if (after !== undefined && !isValidCursor(after)) {
     throw new TypeError("after must be a decimal Snowflake cursor");
   }
+  if (after !== undefined && consumerId !== undefined) {
+    throw new TypeError("after and consumerId cannot be used together");
+  }
 }

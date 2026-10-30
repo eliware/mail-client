@@ -1,5 +1,11 @@
 # Release Notes
 
+## 15.0.3 — 2026-10-30
+
+### Changed
+
+- Send stable consumer IDs with WebSocket connections for durable event tracking.
+
 ## 15.0.2 — 2026-10-30
 
 ### Added

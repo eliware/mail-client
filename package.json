@@ -1,6 +1,6 @@
 {
   "name": "@eliware/mail-client",
-  "version": "15.0.2",
+  "version": "15.0.3",
   "type": "module",
   "description": "Mail client library for the Eliware mail platform.",
   "keywords": [

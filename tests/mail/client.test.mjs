@@ -80,6 +80,7 @@ test("acknowledges durable event cursors after handlers complete", async () => {
   const connection = client.connectEvents({ consumerId: "discord-1", onEvent: async () => {} });
   await Promise.resolve();
   const socket = FakeSocket.instances[0];
+  expect(socket.url).toBe("wss://mail.example.test/ws?consumer_id=discord-1");
   socket.emit("open");
   socket.emit("message", { data: JSON.stringify({ type: "authenticated" }) });
   await connection.ready;

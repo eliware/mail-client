@@ -119,18 +119,19 @@ Events are notification signals. They can repeat and do not include complete mes
 
 ## Process durable events
 
-Use a stable `consumerId` when the application must store progress on mail-server. Set `after` to a saved decimal cursor when processing must start from an earlier event.
+Use a stable `consumerId` when the application must store progress on mail-server. The client sends it as `consumer_id` when it opens the WebSocket. The server resumes from the saved cursor for that consumer.
 
 ```js
 const events = browserMail.connectEvents({
   consumerId: "mail-discord-production",
-  after: savedCursor,
   onEvent: handleEvent,
   onError: reportEventError,
 });
 ```
 
-The client runs one event handler at a time. After a handler succeeds, the client posts its cursor to the acknowledgement route. The client advances its cursor only after that request succeeds. If a handler or acknowledgement fails, the client reports the error, closes the socket, and stops automatic reconnects.
+The client runs one event handler at a time. After a handler succeeds, the client posts its cursor to the acknowledgement route with the same consumer ID. The client advances its cursor only after that request succeeds. If a handler or acknowledgement fails, the client reports the error, closes the socket, and stops automatic reconnects.
+
+Do not set `after` when you set `consumerId`. The server uses the durable consumer cursor for replay and rejects requests that include both values.
 
 Without `consumerId`, the client tracks the cursor in memory only. The client includes its current cursor when it reconnects. Store progress with `consumerId` when an application must continue after a new process starts.
 

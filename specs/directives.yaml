@@ -57,6 +57,8 @@ directives:
       - Reconnect safely and continue events from the last acknowledged cursor.
       - Retry WebSocket setup after token provider failures when automatic reconnect is enabled.
       - Let stable consumer IDs acknowledge processed event cursors through the HTTP API.
+      - Send a stable consumer ID as `consumer_id` when opening a durable WebSocket connection.
+      - Use the server-stored consumer cursor for durable WebSocket event replay.
       - Move durable cursors only after handlers and server acknowledgements succeed.
       - Tolerate repeated events and refresh current data through the HTTP API after notifications.
       - Let callers process events without RabbitMQ payloads as a client contract.
