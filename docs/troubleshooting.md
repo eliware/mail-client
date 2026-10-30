@@ -26,7 +26,7 @@ Check the `onError` callback for socket, event handler, or acknowledgement failu
 
 ## Debug logs are missing
 
-Set `MAIL_CLIENT_LOG_LEVEL=debug` or `LOG_LEVEL=debug` before the Node.js process starts. The Node.js entry writes timestamped JSON records.
+Set `MAIL_CLIENT_LOG_LEVEL=debug` or `LOG_LEVEL=debug` before the Node.js process starts. The Node.js entry uses `@eliware/log` to write timestamped JSON records.
 
 The browser entry stays silent by default. Pass a logger with `debug`, `warn`, and `error` methods to receive browser-side records.
 

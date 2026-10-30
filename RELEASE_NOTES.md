@@ -4,13 +4,14 @@
 
 ### Added
 
-- Add timestamped JSON logs through `@eliware/common` for HTTP and WebSocket requests.
+- Add timestamped JSON logs through `@eliware/log` for HTTP and WebSocket requests.
 - Add debug-level lifecycle records controlled by `MAIL_CLIENT_LOG_LEVEL` or `LOG_LEVEL`.
 - Add an end-user troubleshooting guide for authentication, browser access, WebSocket events, and logs.
 
 ### Changed
 
-- Set the package version to 15.0.2 and replace the direct `@eliware/log` dependency with `@eliware/common`.
+- Set the package version to 15.0.2.
+- Replace the direct `@eliware/common` dependency with `@eliware/log`.
 - Update locked dependencies and align the README and contributor guidance with repository conventions.
 - Resolve request paths that start with `//` on the configured API address.
 - Keep browser logging silent by default and allow injected loggers for HTTP and WebSocket calls.

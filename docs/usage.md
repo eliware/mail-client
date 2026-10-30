@@ -146,7 +146,7 @@ Use `onError` for WebSocket, event-handler, and event-acknowledgement failures. 
 
 ## Configure logging
 
-The Node.js entry uses timestamped JSON logs through `@eliware/common` by default. Set `MAIL_CLIENT_LOG_LEVEL=debug` or `LOG_LEVEL=debug` to enable debug records. Pass a logger with `debug`, `warn`, and `error` methods to use the host logger.
+The Node.js entry uses timestamped JSON logs through `@eliware/log` by default. Set `MAIL_CLIENT_LOG_LEVEL=debug` or `LOG_LEVEL=debug` to enable debug records. Pass a logger with `debug`, `warn`, and `error` methods to use the host logger.
 
 ```js
 const mail = createMailClient({

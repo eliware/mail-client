@@ -67,7 +67,7 @@ directives:
 
   - id: E-1361.4
     dos:
-      - Use `@eliware/common` logging for timestamped JSON logs in the Node.js package entry.
+      - Use `@eliware/log` directly for timestamped JSON logs in the Node.js package entry.
       - Set the default log level through `MAIL_CLIENT_LOG_LEVEL` or `LOG_LEVEL`.
       - Accept an injected logger with `debug`, `warn`, and `error` methods for HTTP and WebSocket
         events.

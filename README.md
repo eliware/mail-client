@@ -56,6 +56,7 @@ Keep long-lived API tokens in server-side secret stores. Do not expose them to b
 ## API
 
 Read the [API reference](docs/api.md) for client options, methods, events, logging, and errors.
+The Node.js entry uses `@eliware/log`. Browser logging stays silent by default.
 
 ## Packaging
 

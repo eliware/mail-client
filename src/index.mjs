@@ -1,4 +1,4 @@
-import { createLogger } from "@eliware/common";
+import { createLogger } from "@eliware/log";
 import { createMailClient as createClient } from "./mail/client.mjs";
 
 const defaultLogger = createLogger({
