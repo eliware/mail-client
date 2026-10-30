@@ -19,6 +19,23 @@ function itemPath(collection, id, suffix = "") {
   return `/api/${collection}/${encodeURIComponent(String(id))}${suffix}`;
 }
 
+const maxDiscordSnowflake = 18_446_744_073_709_551_615n;
+
+function validateDiscordIds(channelId, messageId) {
+  for (const [name, value] of [
+    ["discordChannelId", channelId],
+    ["discordMessageId", messageId],
+  ]) {
+    if (
+      typeof value !== "string" ||
+      !/^[1-9]\d{0,19}$/u.test(value) ||
+      BigInt(value) > maxDiscordSnowflake
+    ) {
+      throw new TypeError(`${name} must be a valid Discord Snowflake ID`);
+    }
+  }
+}
+
 export function createApiMethods({ request, requestJson }) {
   const json = (method, path, body) =>
     requestJson(path, { method, ...(body === undefined ? {} : { body }) });
@@ -30,6 +47,13 @@ export function createApiMethods({ request, requestJson }) {
     thread: (id) => requestJson(itemPath("messages", id, "/thread")),
     update: (id, changes) => json("PATCH", itemPath("messages", id), changes),
     delete: (id) => json("DELETE", itemPath("messages", id)),
+    saveDiscordLink: (id, { discordChannelId, discordMessageId } = {}) => {
+      validateDiscordIds(discordChannelId, discordMessageId);
+      return json("PUT", itemPath("messages", id, "/discord-links"), {
+        discord_channel_id: discordChannelId,
+        discord_message_id: discordMessageId,
+      });
+    },
   };
   const sent = {
     list: (filters) => requestJson(withQuery("/api/sent", filters)),
@@ -49,6 +73,24 @@ export function createApiMethods({ request, requestJson }) {
         delivery_id: deliveryId,
         confirm_duplicate_risk: true,
       });
+    },
+    saveDiscordLink: (id, { discordChannelId, discordMessageId } = {}) => {
+      validateDiscordIds(discordChannelId, discordMessageId);
+      return json("PUT", itemPath("sent", id, "/discord-links"), {
+        discord_channel_id: discordChannelId,
+        discord_message_id: discordMessageId,
+      });
+    },
+  };
+  const discordLinks = {
+    find: (discordChannelId, discordMessageId) => {
+      validateDiscordIds(discordChannelId, discordMessageId);
+      return requestJson(
+        withQuery("/api/discord-links", {
+          discord_channel_id: discordChannelId,
+          discord_message_id: discordMessageId,
+        }),
+      );
     },
   };
   const events = {
@@ -86,6 +128,7 @@ export function createApiMethods({ request, requestJson }) {
     messages,
     search: (query) => requestJson(withQuery("/api/search", { q: query })),
     sent,
+    discordLinks,
     domains: {
       list: () => requestJson("/api/domains"),
       create: (domain) => json("POST", "/api/domains", { domain }),

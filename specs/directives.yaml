@@ -17,6 +17,7 @@ directives:
   - id: E-1361.1
     dos:
       - Support mail-server routes for reads, searches, updates, sends, deletes, and send actions.
+      - Save and find inbound and sent Discord links through authenticated mail-server routes.
       - Preserve API envelopes, request IDs, headers, and attachment metadata.
       - Return typed errors for failed responses and keep available request IDs.
       - Apply request timeouts and accept caller-provided Fetch implementations.

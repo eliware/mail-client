@@ -64,36 +64,41 @@ The client keeps the envelope unchanged. Common data fields include `messages` f
 
 All methods in this table return the complete JSON envelope, except `attachments.download()`, which returns a native `Response`.
 
-| Method                                   | Route                                 | Notes                                                        |
-| ---------------------------------------- | ------------------------------------- | ------------------------------------------------------------ |
-| `auth.requestBrowserToken()`             | `POST /api/auth/token`                | Requests a short-lived browser token.                        |
-| `status()`                               | `GET /api/status`                     | Returns API and dependency state.                            |
-| `inbox.list(filters)`                    | `GET /api/inbox`                      | Lists inbound messages.                                      |
-| `messages.list(filters)`                 | `GET /api/messages`                   | Lists messages.                                              |
-| `messages.unreadCount()`                 | `GET /api/messages/unread-count`      | Returns the unread count.                                    |
-| `messages.get(id)`                       | `GET /api/messages/{id}`              | Reads a message and attachment metadata.                     |
-| `messages.headers(id)`                   | `GET /api/messages/{id}/headers`      | Reads message headers.                                       |
-| `messages.thread(id)`                    | `GET /api/messages/{id}/thread`       | Reads the message conversation.                              |
-| `messages.update(id, changes)`           | `PATCH /api/messages/{id}`            | Changes only the supplied message fields.                    |
-| `messages.delete(id)`                    | `DELETE /api/messages/{id}`           | Deletes a message.                                           |
-| `search(query)`                          | `GET /api/search?q={query}`           | Finds matching inbound and sent messages.                    |
-| `sent.list(filters)`                     | `GET /api/sent`                       | Lists sent messages.                                         |
-| `sent.get(id)`                           | `GET /api/sent/{id}`                  | Reads a sent message, attachments, deliveries, and attempts. |
-| `sent.status(id)`                        | `GET /api/sent/{id}/status`           | Reads status, deliveries, and attempts.                      |
-| `sent.retry(id)`                         | `POST /api/sent/{id}/retry`           | Retries eligible sends.                                      |
-| `sent.cancel(id)`                        | `POST /api/sent/{id}/cancel`          | Cancels eligible sends.                                      |
-| `sent.retryUncertain(id, options)`       | `POST /api/sent/{id}/retry-uncertain` | Requires duplicate-risk confirmation.                        |
-| `sent.delete(id)`                        | `DELETE /api/sent/{id}`               | Deletes a sent message record.                               |
-| `domains.list()`                         | `GET /api/domains`                    | Lists managed domains.                                       |
-| `domains.create(domain)`                 | `POST /api/domains`                   | Adds a managed domain.                                       |
-| `domains.delete(domain)`                 | `DELETE /api/domains/{domain}`        | Removes a managed domain.                                    |
-| `send(message)`                          | `POST /api/send`                      | Queues a JSON send request.                                  |
-| `sendMultipart(formData)`                | `POST /api/send-multipart`            | Queues a multipart send request.                             |
-| `attachments.download(id)`               | `GET /api/attachments/{id}`           | Returns attachment bytes and response headers.               |
-| `events.read(options)`                   | `GET /api/events`                     | Reads event records after an optional cursor.                |
-| `events.acknowledge(consumerId, cursor)` | `POST /api/events/ack`                | Saves a durable consumer cursor.                             |
+| Method                                    | Route                                  | Notes                                                        |
+| ----------------------------------------- | -------------------------------------- | ------------------------------------------------------------ |
+| `auth.requestBrowserToken()`              | `POST /api/auth/token`                 | Requests a short-lived browser token.                        |
+| `status()`                                | `GET /api/status`                      | Returns API and dependency state.                            |
+| `inbox.list(filters)`                     | `GET /api/inbox`                       | Lists inbound messages.                                      |
+| `messages.list(filters)`                  | `GET /api/messages`                    | Lists messages.                                              |
+| `messages.unreadCount()`                  | `GET /api/messages/unread-count`       | Returns the unread count.                                    |
+| `messages.get(id)`                        | `GET /api/messages/{id}`               | Reads a message and attachment metadata.                     |
+| `messages.headers(id)`                    | `GET /api/messages/{id}/headers`       | Reads message headers.                                       |
+| `messages.thread(id)`                     | `GET /api/messages/{id}/thread`        | Reads the message conversation.                              |
+| `messages.update(id, changes)`            | `PATCH /api/messages/{id}`             | Changes only the supplied message fields.                    |
+| `messages.delete(id)`                     | `DELETE /api/messages/{id}`            | Deletes a message.                                           |
+| `messages.saveDiscordLink(id, link)`      | `PUT /api/messages/{id}/discord-links` | Saves an inbound message link.                               |
+| `search(query)`                           | `GET /api/search?q={query}`            | Finds matching inbound and sent messages.                    |
+| `sent.list(filters)`                      | `GET /api/sent`                        | Lists sent messages.                                         |
+| `sent.get(id)`                            | `GET /api/sent/{id}`                   | Reads a sent message, attachments, deliveries, and attempts. |
+| `sent.status(id)`                         | `GET /api/sent/{id}/status`            | Reads status, deliveries, and attempts.                      |
+| `sent.retry(id)`                          | `POST /api/sent/{id}/retry`            | Retries eligible sends.                                      |
+| `sent.cancel(id)`                         | `POST /api/sent/{id}/cancel`           | Cancels eligible sends.                                      |
+| `sent.retryUncertain(id, options)`        | `POST /api/sent/{id}/retry-uncertain`  | Requires duplicate-risk confirmation.                        |
+| `sent.delete(id)`                         | `DELETE /api/sent/{id}`                | Deletes a sent message record.                               |
+| `sent.saveDiscordLink(id, link)`          | `PUT /api/sent/{id}/discord-links`     | Saves a sent message link.                                   |
+| `discordLinks.find(channelId, messageId)` | `GET /api/discord-links`               | Finds a mail record by its Discord link.                     |
+| `domains.list()`                          | `GET /api/domains`                     | Lists managed domains.                                       |
+| `domains.create(domain)`                  | `POST /api/domains`                    | Adds a managed domain.                                       |
+| `domains.delete(domain)`                  | `DELETE /api/domains/{domain}`         | Removes a managed domain.                                    |
+| `send(message)`                           | `POST /api/send`                       | Queues a JSON send request.                                  |
+| `sendMultipart(formData)`                 | `POST /api/send-multipart`             | Queues a multipart send request.                             |
+| `attachments.download(id)`                | `GET /api/attachments/{id}`            | Returns attachment bytes and response headers.               |
+| `events.read(options)`                    | `GET /api/events`                      | Reads event records after an optional cursor.                |
+| `events.acknowledge(consumerId, cursor)`  | `POST /api/events/ack`                 | Saves a durable consumer cursor.                             |
 
 Pass a non-empty ID to methods that read or change one item. The client converts path IDs to strings and URL-encodes them.
+
+Pass `discordChannelId` and `discordMessageId` as decimal Discord Snowflake strings to each `saveDiscordLink()` method. The client rejects zero, non-decimal, and out-of-range IDs before it sends a request. A save method returns `data.message_id` or `data.outbound_id`, plus the Discord links in `data.discord_links`. The `discordLinks.find()` method returns `data.mail_kind` and `data.mail_id`. These methods preserve standard `MailApiError` failures.
 
 ## List filters
 

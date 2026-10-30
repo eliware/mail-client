@@ -67,6 +67,31 @@ export interface MailSendRequest {
   [field: string]: unknown;
 }
 
+export interface DiscordLink {
+  discord_channel_id: string;
+  discord_message_id: string;
+}
+
+export interface DiscordLinkSaveInput {
+  discordChannelId: string;
+  discordMessageId: string;
+}
+
+export interface InboundDiscordLinkSaveResult {
+  message_id: string;
+  discord_links: DiscordLink[];
+}
+
+export interface SentDiscordLinkSaveResult {
+  outbound_id: string;
+  discord_links: DiscordLink[];
+}
+
+export interface DiscordMailLookupResult {
+  mail_kind: "inbound" | "sent";
+  mail_id: string;
+}
+
 export interface MailClient {
   request(path: string, options?: RequestInit): Promise<Response>;
   requestJson<T = unknown>(path: string, options?: RequestInit): Promise<T>;
@@ -89,6 +114,10 @@ export interface MailClient {
     thread(id: string | number): Promise<JsonEnvelope<unknown>>;
     update(id: string | number, changes: Record<string, unknown>): Promise<JsonEnvelope<unknown>>;
     delete(id: string | number): Promise<JsonEnvelope<unknown>>;
+    saveDiscordLink(
+      id: string | number,
+      link: DiscordLinkSaveInput,
+    ): Promise<JsonEnvelope<InboundDiscordLinkSaveResult>>;
   };
   search(query: string): Promise<JsonEnvelope<unknown>>;
   sent: {
@@ -102,6 +131,16 @@ export interface MailClient {
       id: string | number,
       options: { deliveryId: string; confirmDuplicateRisk: true },
     ): Promise<JsonEnvelope<unknown>>;
+    saveDiscordLink(
+      id: string | number,
+      link: DiscordLinkSaveInput,
+    ): Promise<JsonEnvelope<SentDiscordLinkSaveResult>>;
+  };
+  discordLinks: {
+    find(
+      discordChannelId: string,
+      discordMessageId: string,
+    ): Promise<JsonEnvelope<DiscordMailLookupResult>>;
   };
   domains: {
     list(): Promise<JsonEnvelope<unknown>>;
