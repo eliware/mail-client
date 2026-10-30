@@ -50,7 +50,8 @@ export function createTransport({
     if (typeof path !== "string" || path.length === 0) {
       throw new TypeError("path must be a non-empty string");
     }
-    const url = new URL(path, `${apiOrigin}/`);
+    const requestPath = path.startsWith("//") ? path.replace(/^\/+/, "/") : path;
+    const url = new URL(requestPath, `${apiOrigin}/`);
     if (url.origin !== apiOrigin) throw new TypeError("path must use the configured API origin");
 
     const method = String(options.method ?? "GET").toUpperCase();

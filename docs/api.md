@@ -15,7 +15,7 @@ Call `createMailClient(options)` to create an HTTP and WebSocket client.
 | `timeoutMs`      | No       | `15000`                                     | Sets the timeout for each HTTP request.        |
 | `logger`         | No       | Node.js: `@eliware/common`, browser: silent | Supplies `debug`, `warn`, and `error` methods. |
 
-Use an HTTP or HTTPS base address without a path, query, fragment, user name, or password. The client rejects request paths that resolve to a different address.
+Use an HTTP or HTTPS base address without a path, query, fragment, user name, or password. The client resolves request paths on that address. A leading `//` becomes one root slash. Absolute URLs must use the configured address.
 
 The token provider runs before each HTTP request and each new WebSocket connection. It must return a non-empty string. The client does not inspect token claims or refresh tokens by itself.
 

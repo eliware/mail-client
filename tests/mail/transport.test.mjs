@@ -50,6 +50,19 @@ test("sends bearer JSON requests with timeout and caller cancellation", async ()
   expect(logger.debug).toHaveBeenCalled();
 });
 
+test("resolves leading double-slash paths on the configured API origin", async () => {
+  const fetchImpl = jest.fn(async () => goodResponse());
+  const transport = createTransport({
+    baseUrl: "https://mail.test",
+    getAccessToken: () => "token",
+    fetchImpl,
+  });
+
+  await transport.request("//api/status");
+
+  expect(fetchImpl.mock.calls[0][0].href).toBe("https://mail.test/api/status");
+});
+
 test("serializes plain objects and preserves native Fetch body types", async () => {
   const fetchImpl = jest.fn(async () => goodResponse());
   const transport = createTransport({

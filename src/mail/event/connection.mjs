@@ -5,8 +5,6 @@ import { createEventConnectionLogger } from "./connection-logging.mjs";
 import { createEventProcessor } from "./processor.mjs";
 import { createReadyState } from "../ready-state.mjs";
 
-const noop = () => {};
-
 export function createEventConnection({
   baseUrl,
   getAccessToken,
@@ -15,7 +13,7 @@ export function createEventConnection({
   after,
   consumerId,
   onEvent,
-  onError = noop,
+  onError = () => {},
   autoReconnect = true,
   retryDelayMs = 500,
   maxReconnectDelayMs = 30_000,
@@ -111,6 +109,7 @@ export function createEventConnection({
               logs.eventFailed(event, error);
               report(error);
               stopped = true;
+              settleReady(error);
               socket.close(1011, "event processing failed");
             });
         },
