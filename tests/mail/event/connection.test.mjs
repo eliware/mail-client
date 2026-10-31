@@ -114,7 +114,9 @@ test("skips old events and closes after handler or acknowledgement errors", asyn
   failure.socket.emit("message", { data: '{"type":"authenticated"}' });
   await failure.connection.ready;
   failure.socket.emit("message", { data: '{"event_id":"9"}' });
+  failure.socket.emit("message", { data: '{"event_id":"10"}' });
   await jest.advanceTimersByTimeAsync(0);
+  expect(failingHandler).toHaveBeenCalledTimes(1);
   expect(failure.socket.closed.code).toBe(1011);
   expect(jest.getTimerCount()).toBe(0);
   expect(FakeSocket.instances).toHaveLength(socketCountBeforeFailure + 1);

@@ -104,7 +104,7 @@ export function createEventConnection({
         },
         onEvent: (event) => {
           processing = processing
-            .then(() => processEvent(event))
+            .then(() => (stopped ? undefined : processEvent(event)))
             .catch((error) => {
               logs.eventFailed(event, error);
               report(error);
