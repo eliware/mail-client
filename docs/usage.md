@@ -18,6 +18,8 @@ Use a long-lived API token in trusted Node.js applications. Keep a different tok
 
 Use a short-lived browser token in browser code. The mail-web server keeps its long-lived token and requests a browser token from `POST /api/auth/token`. The mail-web server sends the short-lived token to the signed-in browser through its authenticated session.
 
+The library does not read `MAIL_API_URL`, `MAIL_API_TOKEN`, or `MAIL_WEB_API_TOKEN`. The host application reads those values and passes them through `baseUrl` and `getAccessToken`. Read [package details](package.md) for each value's purpose and default.
+
 EliD sign-in belongs to mail-web. This package does not run OAuth flows and does not depend on `@eliware/elid-client`.
 
 ## Create a Node.js client

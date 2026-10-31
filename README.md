@@ -31,19 +31,19 @@ Use Node.js 26 or later. Browser applications require Fetch, Headers, AbortSigna
 
 ## Setup
 
-Install the package with `npm install @eliware/mail-client`. Read the [usage guide](docs/usage.md) to configure the API URL and bearer-token provider.
+Install the package with `npm install @eliware/mail-client`. Follow the [usage guide](docs/usage.md) to configure the API address and bearer-token provider.
 
 ## Usage
 
-Read the [usage guide](docs/usage.md), [API reference](docs/api.md), and [release notes](RELEASE_NOTES.md). Find runnable examples in [examples/README.md](examples/README.md).
+Follow the [usage guide](docs/usage.md). Find client methods in the [API reference](docs/api.md) and version changes in the [release notes](RELEASE_NOTES.md).
 
 ## Development
 
-Read [AGENTS.md](AGENTS.md), [documentation](docs/README.md), and [specifications](specs/README.md) before changing files. Run `npm ci` to install locked dependencies.
+Read [AGENTS.md](AGENTS.md) and [specifications](specs/README.md) before changing files. Find maintained guides in [documentation](docs/README.md).
 
 ## Testing
 
-Run `npm test` for aggregate checks. Run `npm run smoke` for an HTTP and WebSocket check.
+Run `npm test` for aggregate validation. Run `npm run smoke` to check an HTTP and WebSocket connection.
 
 ## Troubleshooting
 
@@ -56,11 +56,10 @@ Keep long-lived API tokens in server-side secret stores. Do not expose them to b
 ## API
 
 Read the [API reference](docs/api.md) for client options, methods, events, logging, and errors.
-The Node.js entry uses `@eliware/log`. Browser logging stays silent by default.
 
 ## Packaging
 
-Follow approved release steps before you publish a version. Read [release notes](RELEASE_NOTES.md) for package changes.
+Read [package details](docs/package.md) for runtime support, package contents, and version rules. Read [release notes](RELEASE_NOTES.md) for package changes.
 
 ## Examples
 
