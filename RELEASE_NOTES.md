@@ -2,9 +2,22 @@
 
 ## 15.0.3 — 2026-10-30
 
+### Added
+
+- Add a package guide for runtime support, entrypoints, environment values, package contents, and publication.
+
 ### Changed
 
-- Send stable consumer IDs with WebSocket connections for durable event tracking.
+- Set the package version to 15.0.3.
+- Send `consumer_id` in durable WebSocket requests and use the server-stored consumer cursor.
+- Reject `after` when a WebSocket connection uses `consumerId`.
+- Keep `ready` pending while automatic reconnect retries token-provider or socket failures.
+- Update locked transitive dependencies and simplify README navigation.
+
+### Fixed
+
+- Stop queued event handlers after an earlier event handler fails.
+- Reject browser WebSocket frames that contain binary `Blob` data.
 
 ## 15.0.2 — 2026-10-30
 
