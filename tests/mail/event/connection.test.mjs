@@ -69,12 +69,10 @@ test("reconnects with the last acknowledged cursor and stops when closed", async
 
 test("cancels a pending reconnect timer when closed", async () => {
   const { connection, socket } = await connect({ autoReconnect: true, retryDelayMs: 10 });
-  const failedReady = expect(connection.ready).rejects.toThrow(
-    "authentication closed with code 1006",
-  );
   socket.emit("close", { code: 1006 });
-  await failedReady;
+  const closedReady = expect(connection.ready).rejects.toThrow("closed by the client");
   connection.close();
+  await closedReady;
   await jest.advanceTimersByTimeAsync(20);
   expect(FakeSocket.instances).toHaveLength(1);
 });
@@ -180,13 +178,22 @@ test("reports token provider failures", async () => {
     onError,
     retryDelayMs: 10,
   });
-  await expect(connection.ready).rejects.toThrow("token unavailable");
+  await Promise.resolve();
   expect(onError).toHaveBeenCalled();
   await jest.advanceTimersByTimeAsync(10);
   expect(getAccessToken).toHaveBeenCalledTimes(2);
   expect(FakeSocket.instances).toHaveLength(1);
+  const socket = FakeSocket.instances[0];
+  socket.emit("open");
+  socket.emit("message", { data: '{"type":"authenticated"}' });
+  await expect(connection.ready).resolves.toBeUndefined();
   expect(jest.getTimerCount()).toBe(0);
   connection.close();
+  const noRetry = await connect({
+    getAccessToken: () => Promise.reject(new Error("token unavailable")),
+  });
+  await expect(noRetry.connection.ready).rejects.toThrow("token unavailable");
+  noRetry.connection.close();
 
   let constructionAttempts = 0;
   class WebSocketImpl {
@@ -282,12 +289,10 @@ test("ignores a reconnect callback after the connection closes", async () => {
     return { unref() {} };
   });
   const { connection, socket } = await connect({ autoReconnect: true });
-  const failedReady = expect(connection.ready).rejects.toThrow(
-    "authentication closed with code 1006",
-  );
   socket.emit("close", { code: 1006 });
-  await failedReady;
+  const closedReady = expect(connection.ready).rejects.toThrow("closed by the client");
   connection.close();
+  await closedReady;
   await reconnect();
   expect(FakeSocket.instances).toHaveLength(1);
   timerSpy.mockRestore();

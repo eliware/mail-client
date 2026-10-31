@@ -48,12 +48,13 @@ export function createEventConnection({
   }
 
   function scheduleReconnect(code) {
-    if (stopped || !autoReconnect || code === 1000 || code === 1008) return;
+    if (stopped || !autoReconnect || code === 1000 || code === 1008) return false;
     const delay = Math.min(retryDelayMs * 2 ** attempt, maxReconnectDelayMs);
     attempt += 1;
     logs.reconnectScheduled(code, delay, attempt, cursor);
     timer = setTimeout(connect, delay);
     timer.unref?.();
+    return true;
   }
 
   const processEvent = createEventProcessor({
@@ -78,8 +79,7 @@ export function createEventConnection({
       if (stopped) return;
       logs.tokenProviderFailed(error);
       report(error);
-      settleReady(error);
-      scheduleReconnect(1006);
+      if (!scheduleReconnect(1006)) settleReady(error);
       return;
     }
     if (stopped) return;
@@ -115,9 +115,10 @@ export function createEventConnection({
         },
         onClose: (code) => {
           logs.closed(code, authenticated, cursor);
-          if (!authenticated)
+          const reconnecting = scheduleReconnect(code);
+          if (!authenticated && !reconnecting) {
             settleReady(new Error(`WebSocket authentication closed with code ${code}`));
-          scheduleReconnect(code);
+          }
         },
         onError: (error) => {
           logs.socketFailed(error);

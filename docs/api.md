@@ -167,7 +167,7 @@ The client waits for this server frame before it delivers events:
 | `maxReconnectDelayMs` | `30000`       | Sets the longest reconnect wait interval.                                      |
 | `WebSocketImpl`       | Client option | Overrides the WebSocket constructor for this connection.                       |
 
-The connection object exposes `ready`, `cursor`, and `close()`. The `ready` promise resolves after the first authentication acknowledgement. It rejects if the first token request fails or the socket closes before authentication. A rejected token request retries automatically when `autoReconnect` is enabled. An invalid token value or WebSocket construction error stops automatic reconnects.
+The connection object exposes `ready`, `cursor`, and `close()`. The `ready` promise resolves after the first authentication acknowledgement. When `autoReconnect` is enabled, retryable token-provider failures and socket closures keep `ready` pending while the client retries. The promise rejects when retries stop before authentication, the token value is invalid, socket construction fails, or the caller closes the connection.
 
 The server accepts cursors from `0` through the maximum Snowflake ID. It requires decimal strings without leading zeroes, except for `0` itself.
 

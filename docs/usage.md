@@ -115,7 +115,7 @@ const events = browserMail.connectEvents({
 await events.ready;
 ```
 
-The server sends `{"type":"authenticated"}` before it sends events. The client resolves `ready` after it receives that frame. The client rejects `ready` if the first connection closes before authentication succeeds.
+The server sends `{"type":"authenticated"}` before it sends events. The client resolves `ready` after it receives that frame. If a retryable failure occurs first, `ready` stays pending until authentication succeeds or retries stop.
 
 Events are notification signals. They can repeat and do not include complete message bodies or attachment bytes. Read current message data through the HTTP API. Make event handlers safe to run more than once.
 
