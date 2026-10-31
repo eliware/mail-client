@@ -16,7 +16,8 @@ export function createWebSocketSession({
     socket.send(JSON.stringify({ type: "authenticate", token }));
   });
   subscribe(socket, "message", (value, isBinary = false) => {
-    if (isBinary) {
+    const data = value?.data;
+    if (isBinary || (typeof Blob !== "undefined" && data instanceof Blob)) {
       onError(new TypeError("WebSocket frames must use JSON text"));
       socket.close(1002, "JSON text required");
       return;

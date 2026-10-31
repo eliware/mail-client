@@ -63,6 +63,11 @@ test("closes invalid frames and reports socket errors", () => {
   const wrongFrame = start({ onError });
   wrongFrame.socket.emit("message", { data: "{}" });
   expect(wrongFrame.socket.closed.code).toBe(1008);
+  if (typeof Blob !== "undefined") {
+    const binaryBlob = start({ onError });
+    binaryBlob.socket.emit("message", { data: new Blob(["{}"]), type: "binary" });
+    expect(binaryBlob.socket.closed).toEqual({ code: 1002, reason: "JSON text required" });
+  }
   const live = start({ onError });
   live.socket.emit("error", "socket failure");
   expect(onError.mock.calls.at(-1)[0]).toBeInstanceOf(Error);
